@@ -1,0 +1,65 @@
+---
+title: "Design of Experiments"
+author: "Yen"
+date: "2018/3/20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+#1
+As part of a larger experiment, Dale (1992) looked at six samples of a wetland soil undergoing a simulated snowmelt. Three were randomly se- lected for treatment with a neutral pH snowmelt; the other three got a reduced pH snowmelt. The observed response was the number of Copepoda removed from each microcosm during the first 14 days of snowmelt.
+
+Reduced pH      Neutral pH  
+256 159 149     54 123 248  
+
+h6(Using randomization methods, test the null hypothesis that the two treatments have equal average numbers of Copepoda versus a two-sided alternative.
+
+```{r}
+ph <- c(256, 159, 149, 54, 123, 248)
+s <- (sum(ph[1:3])-sum(ph[4:6]))/3
+r <- NULL
+for(i in 1:10000){
+  ph1 <- sample(ph ,6,F)
+  exp <-(sum(ph1[1:3])-sum(ph1[4:6]) )/3
+  r <- c(r,exp)
+}
+ggplot(as.data.frame(r),aes(x = r))+
+  geom_histogram(bins = 20)+
+  geom_vline(xintercept = c(-46.333333,46.333333), color = "blue")+
+  labs(title = "模擬結果",
+         x = "r", y = "count")+
+  theme(text  = element_text(size = 10 ,family = "STHeitiTC-Light"))
+p_value <- (sum(r<=(-s))+sum(r>=s))/10000
+```
+```{r}
+p_value
+```
+
+
+
+#2
+Derive  
+$\sum_{i=1}^{g}\sum_{j=1}^{n_i}(y_{ij}-\bar y{..})^2 = \sum_{i=1}^{g}n_i(\bar y_{i.}-\bar y_{..})^2+\sum_{i=1}^{g}\sum_{j=1}^{n_i}(\bar y_{ij}-\bar y{i.})^2$  
+
+<proof>  
+$\sum_{i=1}^{g}\sum_{j=1}^{n_i}(y_{ij}-\bar y{..})^2 = \sum_{i=1}^{g}\sum_{j=1}^{n_i}(y_{i.}-\bar y_{ij}+\bar y_{ij}-\bar y{..})^2\\=\sum_{i=1}^{g}\sum_{j=1}^{n_i}(y_{ij}-\bar y{i.})^2 +2 \sum_{i=1}^{g}\sum_{j=1}^{n_i}(y_{ij}-\bar y{i.})(\bar y_{i.}-\bar y{..})+\sum_{i=1}^{g}\sum_{j=1}^{n_i}(\bar y_{i.}-\bar y{..})^2$  
+
+其中  
+
+$\sum_{i=1}^{g}\sum_{j=1}^{n_i}(y_{ij}-\bar y{i.})(\bar y_{i.}-\bar y{..})=\sum_{i=1}^{g}(\bar y_{i.}-\bar y _{..})\sum_{j=1}^{n_i}(y_{ij}-\bar y_{i.})\\\sum_{j=1}^{n_i}(y_{ij}-\bar y_{i.}) = \sum_{i=1}^{ni}y_{ij}-n_i\bar y_i=0\\\therefore\sum_{i=1}^{g}\sum_{j=1}^{n_i}(y_{ij}-\bar y{i.})(\bar y_{i.}-\bar y{..})$
+
+=>  
+$\sum_{i=1}^{g}\sum_{j=1}^{n_i}(y_{ij}-\bar y{..})^2=\sum_{i=1}^{g}\sum_{j=1}^{n_i}(y_{ij}-\bar y{i.})^2+\sum_{i=1}^{g}\sum_{j=1}^{n_i}(\bar y_{i.}-\bar y{..})^2=\\\sum_{i=1}^{g}\sum_{j=1}^{n_i}(y_{ij}-\bar y{i.})^2+\sum_{i=1}^{g}n_i(\bar y_{i.}-\bar y{..})^2$
+
+又  
+$\bar y_{i.}-\bar y_{..}=\alpha_i$  
+$\therefore \sum_{i=1}^{g}\sum_{j=1}^{n_i}(y_{ij}-\bar y{..})^2=\sum_{i=1}^gn_i\alpha_i+\sum_{i=1}^{g}\sum_{j=1}^{n_i}(y_{ij}-\bar y{i.})^2$
+
+
+
+#3
+$E(MSE)=E(\frac{SSE}{N-g})=\frac{1}{N-g}[(\sum_{i=1}^g(Y_{ij}-\bar Y_{i.})^2]\\=\frac{1}{N-g}\sum_{i=1}^{g}\sum_{j=1}^{n_i}Y_{ij}^2-2\sum_{i=1}^{g}\sum_{j=1}^{n_i}Y\bar Y_{i.}Y_{ij}+\sum_{i=1}^{g}\sum_{j=1}^{n_i}\bar Y_{i.}\\=\frac{1}{N-g}(\sum_{i=1}^{g}\sum_{j=1}^{n_i}E(Y_{ij})-\sum_{i=1}^{g}n_i\bar Y_{i.})\\=\frac{1}{N-g}\sum_{i=1}^{g}\sum_{j=1}^{n_i}(\sigma^2+\mu_i^2)\sum_{i=1}^{g}n_i(\frac{\sigma^2}{n_i}+\mu_i^2)\\=\frac{1}{N-g}(N\sigma^2+\sum_{i=1}^gn_i\mu_i^2-g\sigma^2-\sum_{i=1}^gn_i\mu_i^2)\\=\frac{1}{N-g}(N-g)\sigma^2=\sigma^2$
+
