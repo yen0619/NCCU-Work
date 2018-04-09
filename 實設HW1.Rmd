@@ -1,0 +1,61 @@
+---
+title: "Design and Analysis of Experiment"
+author: "Yen"
+date: "2018/3/12"
+output: html_document
+---
+
+```{r}
+x <- c(15.3 ,-31.8 ,-35.6 ,-14.5 ,3.1 ,-24.5)
+#random 
+r <- function(){ 
+  sample(x = c(1,-1),size = 6,replace = T,prob = c(0.5,0.5))
+}
+#
+t <- function(e){
+  sum(e)/sd(e)
+}
+#experiment
+exp <- NULL
+for(i in 1:10000){
+  a <- t(x*r())
+  exp[i] <- a
+}
+hist(exp,breaks = 64,main = "obs of random experiment")
+```
+
+```{r}
+p <- (sum(t(x)>exp)+sum((-1)*t(x)<exp))/10000
+p  #0.0795
+#p <0.05 >>> reject H0 under alpha = 0.05
+#insecticide chlordane has affected the (Na+ ,-K+ ,ATPas) activity.
+
+```
+
+```{r}
+o <- c(0.950, 0.978, 0.762, 0.733, 0.823, 1.011)
+r <- function(){ 
+  sample(x = c(1,0),size = 6,replace = T,prob = c(0.5,0.5))
+}
+#experiment
+exp <- NULL
+for (i in 1:10000) {
+  x <- c(0.950, 0.978, 0.762, 0.733, 0.823, 1.011)
+  a <- r()
+  for (j in 1:6) {
+    if(a[j] == 0){ x[j] <- (1/x[j]) 
+    }
+  }
+  exp[i] <- sum(x)
+}
+hist(exp , breaks = 64)
+```
+```{r}
+p <- sum(sum(o)<exp)/10000
+p
+#p <0.05 >>> reject H0 under alpha = 0.05
+#Visiplume reads higher than the standard
+````
+
+
+
