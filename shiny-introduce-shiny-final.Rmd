@@ -1,0 +1,741 @@
+---
+title: "Let Shiny Introduce Shiny"
+author: "Yen & Yeh"
+date: "2018/2/21"
+output: 
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll:  true
+runtime: shiny
+
+---
+#Shiny套件載入
+
+```{r}
+library(shiny)  
+```
+
+
+
+#Shiny的架構
+> UI:使用者介面，決定網頁風格
+
+> Server:伺服器，後端程式碼
+
+> Input:在UI更改參數之後，要傳遞給server的新參數
+
+> Output:經server處理後，要提交給UI的新物件
+
+![](https://i.imgur.com/zJgvzym.png)
+
+
+##Input類型
+
+![](https://i.imgur.com/UME0xZ7.png)
+
+
+##Server提交給Output的物件類型
+
+![](https://i.imgur.com/abOvmfE.png)
+
+
+##Output種類
+
+![](https://i.imgur.com/g5DtLgk.png)
+
+
+
+#Shiny的基本語法結構
+>  ui <- fluidPage...  --- UI版面的長相  
+
+>  server <- function(...){...} --- 後端程式碼 
+
+>  shinyApp(ui, server) --- 執行shiny網頁  
+
+```{r , R.options = 'shiny'}
+
+ui <- fluidPage(
+  titlePanel(title = "title panel"),
+
+  sidebarLayout(
+    sidebarPanel("sidebar panel"), 
+    mainPanel("main panel")  
+  )
+)
+
+
+server <- function(input, output) {
+  #後端程式碼寫在這裡
+}
+
+
+shinyApp(ui = ui, server = server)
+
+```
+
+##簡易html語法
+
+```{r R.options = 'shiny'}
+
+ui <- fluidPage(
+  titlePanel("HTML Header"),
+  sidebarLayout(
+    sidebarPanel(),
+    mainPanel(
+      h1("老大"), #<h1> First level title </h1>
+      h2("老二"),
+      h3("老三"),
+      h4("老四"),
+      h5("老五"),
+      h6("老么")
+    )
+  )
+)
+server <- function(input, output) {
+  
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+##還是html介紹
+```{r R.options = 'shiny'}
+ui <- fluidPage(
+  titlePanel(title = "這是標題"),
+  sidebarLayout(
+    sidebarPanel(),
+    mainPanel(
+      p("p creates a paragraph of text."),
+      p("新的p()會多一個新的段落。 style可以拿來改長相。", style = "font-family: 'times'; font-si16pt"),
+      strong("strong()是粗體字。"),
+      em("em()是斜體字。"),
+      br(),
+      code("讓文字看起來像code的樣子。"),
+      div("div是區塊標籤 'style = color:blue' to div 讓文字看起來不一樣", style = "color:blue"),
+      br(),
+      p("span跟div很像" , span("不過是", style = "color:blue") , "在段落中出現.")
+    )
+  )
+)
+server <- function(input, output) {
+  
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+##圖片
+```{r}
+ui <- fluidPage(
+  titlePanel("標題"),
+  sidebarLayout(
+    sidebarPanel(),
+    mainPanel(
+      img(src = "https://i.imgur.com/6tnULA7.png", height = 350, width = 350)
+    )
+  )
+)
+server <- function(input, output) {
+  
+}
+
+shinyApp(ui = ui, server = server)
+```
+##按鈕
+```{r}
+ui <- fluidPage(
+  titlePanel("標題"),
+  
+  fluidRow(
+    
+    column(3,
+           h3("Buttons"),
+           actionButton("action", "Action"),
+           br(),
+           br(), 
+           submitButton("Submit"),
+           br(),
+           actionLink("link" ,"Link",icon = icon("apple"))),
+    
+    column(3,
+           h3("Single checkbox"),
+           checkboxInput("checkbox", "Choice A", value = TRUE)),
+    
+    column(3, 
+           checkboxGroupInput("checkGroup", 
+                              h3("Checkbox group"), 
+                              choices = list("Choice 1" = 1, 
+                                             "Choice 2" = 2, 
+                                             "Choice 3" = 3),
+                              selected = 1)),
+    
+    column(3, 
+           radioButtons("radio", h3("Radio buttons"),
+                        choices = list("Choice 1" = 1, "Choice 2" = 2,
+                                       "Choice 3" = 3),selected = 1))  
+  )
+)
+
+server <- function(input, output) {
+  
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+##日期、選項選取
+```{r}
+ui <-fluidPage( 
+  titlePanel("Title"),
+  fluidRow(
+   
+    
+    column(3, 
+           dateInput(inputId = "date", 
+                     h3("Date input"), 
+                     value = "2017-01-01")
+    ) ,
+    
+    column(3,
+           dateRangeInput("dates", h3("Date range"))),
+    
+    
+    column(3,
+           selectInput("select", h3("Select box"), 
+                       choices = list("Choice 1" = 1, "Choice 2" = 2,
+                                      "Choice 3" = 3), selected = 1)),
+    
+
+    column(3, 
+           numericInput("num", 
+                        h3("Numeric input"), 
+                        value = 1))  
+    
+  )
+)
+ 
+server <- function(input, output) {
+  
+}
+
+shinyApp(ui = ui, server = server)
+ 
+```
+
+##輸入、數字選取、上傳下載
+```{r}
+ui <- fluidPage(
+  titlePanel("好多ＱＱ"),
+  
+  fluidRow(
+    
+    column(3, 
+           textInput("text", h3("Text input"), 
+                     value = "Enter text..."),
+           h3("Help text"),
+           helpText("Note: help text isn't a true widget,", 
+                    "but it provides an easy way to add text to",
+                    "accompany other widgets.")
+           ),
+    
+    
+    column(3,
+           numericInput("numeric input" ,h3("Numeric"),value = 87)),
+    
+    column(3,
+           fileInput("file", h3("File input"))),
+    
+    column(3,
+           h3("Download Button"),
+           downloadButton("download",h6("Download")))
+    )
+  )
+
+server <- function(input, output) {
+  
+}
+
+shinyApp(ui = ui, server = server)
+
+```
+
+##拉拉拉
+```{r}
+ui <- fluidPage(
+  titlePanel("Title"),
+  
+fluidPage( sliderInput(inputId = "slider1",
+                        label = "Integer",
+                        value = 500,
+                        min = 0,
+                        max = 1000),
+            sliderInput(inputId = "slider2",
+                        label = "Decimal",
+                        value = 500,
+                        min = 0,
+                        max = 1,
+                        step = 0.2),
+            sliderInput(inputId = "slider3",
+                        label = "Range",
+                        value = c(500,800),
+                        min = 0,
+                        max = 1000),
+            sliderInput(inputId = "slider4",
+                        label = "Format",
+                        value = 0,
+                        min = 0,
+                        max = 10000,
+                        step = 250,
+                        sep = ",",
+                        pre = "$",
+                        post = "NTD"
+                        ,animate = TRUE),
+            sliderInput(inputId = "slider5",
+                        label = "Animation",
+                        value = 0,
+                        min = 0,
+                        max = 10000,
+                        step = 500,
+                        animate = 
+                            animationOptions(interval = 100,
+                                             loop = F))
+)
+)
+
+server <- function(input, output) {
+  
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+##結合server回傳輸入值
+```{r}
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(  #input
+      textInput("text",label = "Type what you want to print")
+    ),
+    mainPanel(  #Output
+      textOutput(outputId = "print")
+    )
+  )
+  
+  
+)
+
+server <- function(input, output, session) {
+  output$print <-  renderText({
+    input$text
+  })
+}
+
+shinyApp(ui, server)
+```
+
+#各種範例
+##選資料跑總結
+```{r}
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+       selectInput("select" , "choose a data",choices = c("cars","iris","rock"),selected = "cars")
+    ),
+    mainPanel(
+      verbatimTextOutput(outputId = "print")
+      
+    )
+  )
+ 
+)
+
+server <- function(input, output, session) {
+  
+  output$print <- renderPrint({
+    if(input$select == "cars"){
+      summary(cars)
+    }else if(input$select == "iris"){
+      summary(iris)
+    }else {
+      summary(rock)
+    }
+  })
+    
+  
+}
+
+shinyApp(ui, server)
+
+
+```
+
+##要幾列給幾列
+```{r}
+
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+       selectInput("select" , "choose a data",choices = c("cars","iris","rock"),selected = "cars"),
+       ##########
+       numericInput("num","顯示幾筆資料",value = 2,min = 0)
+    ),
+    mainPanel(
+      verbatimTextOutput(outputId = "print"),
+      ##########
+      tableOutput(outputId = "table")
+      
+    )
+  )
+ 
+)
+
+server <- function(input, output, session) {
+  
+  output$print <- renderPrint({
+    if(input$select == "cars"){
+      summary(cars)
+    }else if(input$select == "iris"){
+      summary(iris)
+    }else {
+      summary(rock)
+    }
+  })
+    
+  ##############
+  output$table <- renderTable({
+     df <- switch(input$select,
+                    "cars" = cars,
+                    "iris" = iris,
+                    "rock" = rock)
+     head(df,n = input$num)
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+
+##畫圖
+```{r}
+library(shiny)
+library(ggplot2)
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      
+      sliderInput(inputId = "num",label = "Choose a number",value = 1, min = 1, max = 2000
+                  ,step = 80,animate = animationOptions(interval = 200,loop = F))
+    ),
+    mainPanel(
+      plotOutput("hist")
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  output$hist <- renderPlot({
+    require(ggplot2)
+    df <- data.frame("數據"= rnorm(n = input$num ))
+     ggplot(data = df,aes(x = 數據))+geom_histogram()+
+    theme(text  = element_text(size = 10 ,family = "STHeitiTC-Light"))
+
+  })
+}
+
+shinyApp(ui, server)
+```
+
+##上傳檔案
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+
+  titlePanel("Uploading Files"),
+
+  sidebarLayout(
+
+    sidebarPanel(
+
+      fileInput("file1", "Choose CSV File",multiple = TRUE, accept = c("text/csv",".csv")),
+
+      checkboxInput("header", "Header", TRUE),
+
+      radioButtons("sep", "Separator", choices = c(Comma = ",", Semicolon = ";",Tab = "\t"), selected = ","),
+
+      radioButtons("quote", "Quote", choices = c(None = "","Double Quote" = '"',"Single Quote" = "'"),selected = '"')
+
+    ),
+
+    mainPanel(
+
+      tableOutput("contents")
+
+    )
+
+  )
+)
+
+server <- function(input, output) {
+
+  output$contents <- renderTable({
+
+
+    req(input$file1)
+
+    df <- read.csv(input$file1$datapath,
+             header = input$header,
+             sep = input$sep,
+             quote = input$quote)
+
+  })
+
+}
+
+shinyApp(ui, server)
+```
+
+##分頁
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  fluidRow(
+      tabsetPanel(
+      tabPanel(title = "summary",verbatimTextOutput(outputId = "print")),
+      tabPanel(title = "View Data",tableOutput(outputId = "table")),
+      tabPanel(title = "Plot",plotOutput(outputId = "plot"))
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  output$print <- renderPrint({
+    
+    summary(cars)
+  })
+  output$table <- renderTable({
+    cars
+  })
+  output$plot <- renderPlot({
+    plot(cars)
+
+  })
+}
+
+shinyApp(ui, server)
+```
+
+##下載
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+
+  titlePanel("下載練習"),
+
+  sidebarLayout(
+
+    sidebarPanel(
+
+      selectInput("dataset", "Choose a dataset:",
+                  choices = c("rock", "pressure", "cars")),
+
+      numericInput("obs", "Number of observations to view:", 2),
+
+      helpText("Note: while the data view will show only the specified",
+               "number of observations, the summary will still be based",
+               "on the full dataset."),
+
+      actionButton("update", "Update View")
+      
+      
+
+    ),
+
+    mainPanel(
+      h4("Observations"),
+      
+      downloadButton(outputId = "download",label = "Download Table"),
+      
+      tableOutput("view")
+    )
+
+  )
+)
+
+server <- function(input, output) {
+
+  datasetInput <- eventReactive(input$update, {
+    switch(input$dataset,
+           "rock" = rock,
+           "pressure" = pressure,
+           "cars" = cars)
+  }, ignoreNULL = FALSE)
+
+  output$view <- renderTable({
+    head(datasetInput(), n = isolate(input$obs))
+  })
+  
+   output$download <- downloadHandler(
+    filename = function() {
+
+      paste0(input$dataset , ".csv")
+    },
+    
+    content = function(file) {
+      data.new <- head(datasetInput(), n = isolate(input$obs))
+      write.csv(data.new, file, row.names = FALSE)
+    }
+  )
+}
+
+shinyApp(ui, server)
+```
+
+##ui變化
+```{r}
+
+library(shiny)
+library(ggplot2)
+ui <- fluidPage(
+  fluidRow(
+      tabsetPanel(
+      tabPanel(title = "ex1",uiOutput(outputId = "ex1")),
+      tabPanel(title = "ex2",uiOutput(outputId = "ex2")),
+      tabPanel(title = "ex3",uiOutput(outputId = "ex3"))
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  ui_1 <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+       selectInput("select" , "choose a data",choices = c("cars","iris","rock"),selected = "cars"),
+       ##########
+       numericInput("num","顯示幾筆資料",value = 6,min = 0)
+    ),
+    mainPanel(
+      verbatimTextOutput(outputId = "print"),
+      ##########
+      tableOutput(outputId = "table")
+      
+    )
+  )
+ 
+)
+
+  
+  output$print <- renderPrint({
+    if(input$select == "cars"){
+      summary(cars)
+    }else if(input$select == "iris"){
+      summary(iris)
+    }else {
+      summary(rock)
+    }
+  })
+    
+  ##############
+  output$table <- renderTable({
+     df <- switch(input$select,
+                    "cars" = cars,
+                    "iris" = iris,
+                    "rock" = rock)
+     head(df,n = input$num)
+  })
+
+####################################################################################
+  ui_2 <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      
+      sliderInput(inputId = "number",label = "Choose a number",value = 1, min = 1, max = 2000
+                  ,step = 80,animate = animationOptions(interval = 200,loop = F))
+    ),
+    mainPanel(
+      plotOutput("hist")
+    )
+  )
+)
+
+  output$hist <- renderPlot({
+    require(ggplot2)
+    df <- data.frame("數據"= rnorm(n = input$number ))
+     ggplot(data = df,aes(x = 數據))+geom_histogram()+
+    theme(text  = element_text(size = 10 ,family = "STHeitiTC-Light"))
+
+  })
+####################################################################################
+  ui_3 <- fluidPage(
+
+  titlePanel("Uploading Files"),
+
+  sidebarLayout(
+
+    sidebarPanel(
+
+      fileInput("file1", "Choose CSV File",multiple = TRUE, accept = c("text/csv",".csv")),
+
+      checkboxInput("header", "Header", TRUE),
+
+      radioButtons("sep", "Separator", choices = c(Comma = ",", Semicolon = ";",Tab = "\t"), selected = ","),
+
+      radioButtons("quote", "Quote", choices = c(None = "","Double Quote" = '"',"Single Quote" = "'"),selected = '"')
+
+    ),
+
+    mainPanel(
+
+      tableOutput("contents")
+
+    )
+
+  )
+)
+
+
+  output$contents <- renderTable({
+
+
+    req(input$file1)
+
+    df <- read.csv(input$file1$datapath,
+             header = input$header,
+             sep = input$sep,
+             quote = input$quote)
+
+  })
+####################################################################################
+
+  output$ex1 <- renderUI({
+    ui_1
+  })
+  output$ex2 <- renderUI({
+    ui_2
+  })
+  output$ex3 <- renderUI({
+    ui_3
+
+  })
+}
+
+shinyApp(ui, server)
+
+```
+
+<!-- #參考用 -->
+##網頁們
+<iframe src="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/" height=600 width=800></iframe>
+<iframe src="https://shiny.rstudio.com/tutorial/" height=600 width=800></iframe>
+<iframe src="https://www.markdowntutorial.com" height=600 width=800></iframe>
+<iframe src="https://yeyuting0307.shinyapps.io/ShinyPractice/" height=600 width=800></iframe>
+
+##網址們
+#####[參考網址**1**](https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/)
+#####[參考網址**2**](https://shiny.rstudio.com/tutorial/)
+#####[參考網址**3**](https://www.markdowntutorial.com)
+#####[練習網址**4**](https://yeyuting0307.shinyapps.io/ShinyPractice/)  
